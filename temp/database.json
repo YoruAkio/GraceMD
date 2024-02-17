@@ -1,0 +1,39 @@
+{
+  "users": {
+    "6287799156435@s.whatsapp.net": {
+      "limit": 15,
+      "lastChat": 1708169696450,
+      "premium": true,
+      "VIP": true,
+      "name": "Naki si petani",
+      "banned": false,
+      "money": {
+        "inBank": 0,
+        "inWallet": 0
+      },
+      "adventure": {
+        "lastHunting": 1708169696450,
+        "lastDaily": 1708169696450,
+        "lastWeekly": 1708169696450,
+        "lastMonthly": 1708169696451,
+        "location": "forest",
+        "tier": 1,
+        "exp": 0,
+        "level": 0,
+        "maxHealth": 100,
+        "health": -5,
+        "damage": 10,
+        "maxExp": 100,
+        "inventory": []
+      }
+    }
+  },
+  "groups": {
+    "120363222713392163@g.us": {
+      "lastChat": 1708169696451,
+      "mute": false,
+      "welcome": true,
+      "leave": true
+    }
+  }
+}
