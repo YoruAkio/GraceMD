@@ -23,7 +23,7 @@
 
 # Donate to the project.
 
--   [`PayPal`](https://www.paypal.me/Cakhaho)
--   [`Saweria`](https://saweria.co/DikaArdnt)
+-   [`PayPal`](https://www.paypal.me/YoruAkio)
+-   [`Saweria`](https://saweria.co/YoruAkio)
 
 </br>
