@@ -1,5 +1,4 @@
-</br>
-<hr style="height: 5px;background: #007500;margin: 20px 0;box-shadow: 0px 3px 5px 0px rgb(204 204 204);">
+<h1 align="center">Grace-MD</h1>
 
 <div align="center">
 
