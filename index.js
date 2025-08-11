@@ -12,12 +12,12 @@ function start(file) {
     if (isRunning) return;
     isRunning = true;
     console.log('Starting . . .');
-    let args = [path.join(__dirname, file), ...process.argv.slice(2)];
-    let p = spawn(process.argv[0], args, {
+    const args = [path.join(__dirname, file), ...process.argv.slice(2)];
+    const p = spawn(process.argv[0], args, {
         stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
     })
         .on('message', data => {
-            console.log('[RECEIVED]', data);
+            if (process.env.DEBUG) console.log('[RECEIVED]', data);
             switch (data) {
                 case 'reset':
                     platform() === 'win32' ? p.kill('SIGINT') : p.kill();
@@ -31,7 +31,7 @@ function start(file) {
         })
         .on('exit', code => {
             isRunning = false;
-            console.error('Exited with code:', code);
+            console.error('Exited with code:', code); // keep single error log
             if (code === 0) return;
             watchFile(args[0], () => {
                 unwatchFile(args[0]);

@@ -5,6 +5,9 @@
 
 import config from './config.js';
 import { Client, Serialize } from './lib/serialize.js';
+import messageHandler from './event/message.js';
+import groupParticipantsHandler from './event/group-participants.js';
+import groupUpdateHandler from './event/group-update.js';
 
 import baileys from '@whiskeysockets/baileys';
 const {
@@ -21,7 +24,7 @@ import NodeCache from 'node-cache';
 import chalk from 'chalk';
 import readline from 'readline';
 import { parsePhoneNumber } from 'libphonenumber-js';
-import open from 'open';
+// import open from 'open';
 import path from 'path';
 
 global.api = async (name, options = {}) =>
@@ -266,7 +269,7 @@ async function start() {
                 pathFile,
                 Buffer.from(response.image_blob, 'base64'),
             );
-            await open(pathFile);
+            // await open(pathFile);
             const code = await question(
                 chalk.bgBlack(
                     chalk.greenBright(`Please Enter Your Captcha Code : `),
@@ -322,36 +325,36 @@ async function start() {
 
         if (connection === 'close') {
             let reason = new Boom(lastDisconnect?.error)?.output.statusCode;
-            if (reason === DisconnectReason.badSession) {
-                console.log(
-                    `Bad Session File, Please Delete Session and Scan Again`,
-                );
+                         if (reason === DisconnectReason.badSession) {
+                 console.warn(
+                     `Bad Session File, Please Delete Session and Scan Again`,
+                 );
                 process.send('reset');
             } else if (reason === DisconnectReason.connectionClosed) {
-                console.log('Connection closed, reconnecting....');
+                console.warn('Connection closed, reconnecting....');
                 await start();
             } else if (reason === DisconnectReason.connectionLost) {
-                console.log('Connection Lost from Server, reconnecting...');
+                console.warn('Connection Lost from Server, reconnecting...');
                 await start();
             } else if (reason === DisconnectReason.connectionReplaced) {
-                console.log(
+                console.warn(
                     'Connection Replaced, Another New Session Opened, Please Close Current Session First',
                 );
                 process.exit(1);
             } else if (reason === DisconnectReason.loggedOut) {
-                console.log(`Device Logged Out, Please Scan Again And Run.`);
+                console.warn(`Device Logged Out, Please Scan Again And Run.`);
                 process.exit(1);
             } else if (reason === DisconnectReason.restartRequired) {
-                console.log('Restart Required, Restarting...');
+                console.warn('Restart Required, Restarting...');
                 await start();
             } else if (reason === DisconnectReason.timedOut) {
-                console.log('Connection TimedOut, Reconnecting...');
+                console.warn('Connection TimedOut, Reconnecting...');
                 process.send('reset');
             } else if (reason === DisconnectReason.multideviceMismatch) {
-                console.log('Multi device mismatch, please scan again');
+                console.warn('Multi device mismatch, please scan again');
                 process.exit(0);
             } else {
-                console.log(reason);
+                console.warn(reason);
                 process.send('reset');
             }
         }
@@ -364,23 +367,17 @@ async function start() {
     kiontol.ev.on('messages.upsert', async message => {
         if (!message.messages) return;
         const m = await Serialize(kiontol, message.messages[0]);
-        await (
-            await import(`./event/message.js?v=${Date.now()}`)
-        ).default(kiontol, m, message);
+        await messageHandler(kiontol, m, message);
     });
 
     // group participants update
     kiontol.ev.on('group-participants.update', async message => {
-        await (
-            await import(`./event/group-participants.js?v=${Date.now()}`)
-        ).default(kiontol, message);
+        await groupParticipantsHandler(kiontol, message);
     });
 
     // group update
     kiontol.ev.on('groups.update', async update => {
-        await (
-            await import(`./event/group-update.js?v=${Date.now()}`)
-        ).default(kiontol, update);
+        await groupUpdateHandler(kiontol, update);
     });
 
     // auto reject call when user call
