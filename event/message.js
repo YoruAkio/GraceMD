@@ -5,17 +5,10 @@ const Eco = new EconomyUtils();
 
 import fs from 'fs';
 import chalk from 'chalk';
-import axios from 'axios';
-import path from 'path';
-import { getBinaryNodeChildren } from '@whiskeysockets/baileys';
 import { exec } from 'child_process';
 import { format } from 'util';
-import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const __filename = Func.__filename(import.meta.url);
-const require = createRequire(import.meta.url);
 
 export default async function Message(kiontol, m, chatUpdate) {
     try {
@@ -32,7 +25,7 @@ export default async function Message(kiontol, m, chatUpdate) {
         const quoted = m.isQuoted ? m.quoted : m;
 
         // LOG Chat
-        if (m.message && !m.isBaileys) {
+        if (process.env.DEBUG && m.message && !m.isBaileys) {
             console.log(
                 chalk.black(chalk.bgWhite('- FROM')),
                 chalk.black(chalk.bgGreen(m.pushName)),
@@ -277,7 +270,7 @@ export default async function Message(kiontol, m, chatUpdate) {
                         tier => tier.level === db.adventure.tier,
                     );
 
-                    console.log(tier.name);
+                    if (process.env.DEBUG) console.log(tier.name);
 
                     m.reply(
                         `User Info\n\nName : @${jid.split`@`[0]}\nLevel : ${
@@ -304,8 +297,8 @@ export default async function Message(kiontol, m, chatUpdate) {
                     let db = global.db.users[jid];
                     let user = Eco.getUserInfo(jid);
                     let item = Eco.getItemInfo(1);
-                    console.log(user);
-                    console.log(item);
+                    if (process.env.DEBUG) console.log(user);
+                    if (process.env.DEBUG) console.log(item);
                     m.reply(
                         `User Info\n\nName : ${user.get(
                             'name',
@@ -321,8 +314,8 @@ export default async function Message(kiontol, m, chatUpdate) {
             case 'hunting':
                 {
                     let res = Eco.huntMonster(m.sender);
-                    JSON.stringify(res);
-                    console.log(res);
+                    if (process.env.DEBUG) JSON.stringify(res);
+                    if (process.env.DEBUG) console.log(res);
                     m.reply(
                         `*Hunting Result*\n\nStatus : ${res.result}\n\n${res.message}`,
                     );
@@ -426,7 +419,7 @@ export default async function Message(kiontol, m, chatUpdate) {
                         item => item.id === parseInt(itemId),
                     );
                     let price = Math.floor(itemData.price * 0.25) * amount;
-                    console.log(price);
+                    if (process.env.DEBUG) console.log(price);
                     user.money.inWallet += price;
                     item.amount -= amount;
                     m.reply(
@@ -530,11 +523,9 @@ export default async function Message(kiontol, m, chatUpdate) {
                 break;
             case 'ping':
                 {
-                    const moment = (await import('moment-timezone')).default;
                     const calculatePing = function (timestamp, now) {
-                        return moment
-                            .duration(now - moment(timestamp * 1000))
-                            .asSeconds();
+                        const diffMs = now - timestamp * 1000;
+                        return Math.max(0, diffMs / 1000).toFixed(3);
                     };
                     m.reply(
                         `*Ping :* *_${calculatePing(
